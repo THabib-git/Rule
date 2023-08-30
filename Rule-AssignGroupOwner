@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE sailpoint PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<sailpoint><Rule language="beanshell" name="FetchConfiguration">
+  <Description>Identity creation rules are used to set attributes on new Identity objects
+        when they are created. New identities may be created during the
+        aggregation of application accounts, or optionally created after
+        pass-through authentication.
+
+        One common operation is to change the name property of the identity
+        when the default application name is complex (such as a
+        directory DN).
+
+        Another common operation is to assign a set of initial capabilities based
+        on the attributes pulled from the application account.</Description>
+<Signature returnType="void">
+<Inputs>
+<Argument type="context">
+<Description>
+Sailpoint context.
+</Description>
+</Argument></Inputs>
+<Returns>
+</Returns>
+</Signature>
+<!--ReferencedRules>
+  <Reference class="sailpoint.object.Rule" name=""/>
+</ReferencedRules-->
+  <Source><![CDATA[
+/*******
+ *                                                                    *
+ * Generated: Wed Sep 14 19:01:29 PDT 2022                            *
+ * Rule: Identity Creation Template                                   *
+ * Description: Identity Creation Template                            *
+ * Inputs:                                                            *
+ *     environment - Arguments passed to the aggregation task.        *
+ *     application - Application being aggregated.                    *
+ *     account - The resource account for the identity being created. *
+ *     identity - The identity that is being created.                 *
+ * Returns:                                                           *
+ ******/
+
+import org.apache.log4j.Logger;
+import sailpoint.object.ManagedAttribute;
+import sailpoint.object.Filter;
+import sailpoint.object.QueryOptions;
+import sailpoint.object.AccountGroup;
+
+import java.util.Iterator;
+Logger customLogger = Logger.getLogger("com.identityclasses.rules");
+Filter f=Filter.eq("application.name","Active Directory");
+Filter f1=Filter.eq("","");
+QueryOptions qo=new QueryOptions();
+qo.addFilter(f);
+Iterator it=context.search(ManagedAttribute.class,qo);
+Iterator it1=context.search(AccountGroup.class,qo);
+customLogger.info("Printing the details from Managed Attribute");
+while(it.hasNext())
+{
+		ManagedAttribute ma=it.next();
+		customLogger.info(ma.getApplication().getName());
+		customLogger.info(ma.getDisplayName());	
+		customLogger.info(ma.getValue());
+}
+customLogger.info("Printing the details from Account Group");
+while(it1.hasNext())
+{
+		AccountGroup ma=it1.next();
+		customLogger.info(ma.getApplication());
+		customLogger.info(ma.getName());
+		customLogger.info(ma.getNativeIdentity());
+}
+
+  ]]></Source>
+</Rule>
+</sailpoint>
